@@ -1,4 +1,4 @@
-package run.ciusyan.排序算法;
+package run.ciusyan._5_1;
 
 public class BubbleSort {
 

@@ -44,7 +44,7 @@ public class UnionFind<V> {
         if (node == null) return null;
 
         // 来到这里，节点肯定存在了，沿着父节点一路往上找，直至父节点就是自己
-        while (!Objects.equals(node, node.parent)) {
+        while (!Objects.equals(node.value, node.parent.value)) {
             // 将自己指向祖父节点
             node.parent = node.parent.parent;
 

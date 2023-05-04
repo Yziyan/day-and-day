@@ -1,5 +1,7 @@
 package run.ciusyan._5_4;
 
+import run.ciusyan._5_3.UnionFind;
+
 import java.util.*;
 
 /**
@@ -366,6 +368,42 @@ public class ListGraph<V, E> {
 
             // 然后需要将它终点的出边作为起点入堆，进行下一轮循环
             minHeap.addAll(minEdge.to.outEdges);
+        }
+
+        return result;
+    }
+
+    /**
+     * 使用 Kruskal 算法求出的MST：
+     * Kruskal算法也是一种基于贪心策略的求解最小生成树的算法。它的核心是在所有边集中，在不使顶点间成环的情况下，
+     * 每次选择一条最小权边加入结果集合中。这里可以使用最小堆，维护边的最小值。它的难点在于，如何判断将某边加入
+     * 结果集中后，会不会使最小生成树出现环。一种简单的实现就是使用并查集。在每次添加结果前，先判断这条边的起点和
+     * 终点是否已经在一个集合中了，如果已经在一个集合中了，添加这条边，就会出现环。那么只有当起点和终点不在一个集合中
+     * 的情况下，才去添加这条边。并且要将起点和终点合并到一个集合。
+     *
+     */
+    public Set<EdgeInfo<V, E>> mstKruskal() {
+        Set<EdgeInfo<V, E>> result = new HashSet<>();
+
+        // 使用并查集，将所有的边集，初始化成一个单独的集合
+        UnionFind<Vertex<V, E>> unionFind = new UnionFind<>();
+        unionFind.makeSet(vertices.values());
+
+        // 将所有的边原地入堆，这里也暂时使用JDK的最小堆
+        PriorityQueue<Edge<V, E>> minHeap = new PriorityQueue<>(edges);
+
+        // 只要堆不为空，或者结果中已经有 n - 1条边了，就可以返回了
+        int resEdgeSize = vertices.size() - 1;
+        while (!minHeap.isEmpty() && result.size() < resEdgeSize) {
+            // 删除堆顶元素
+            Edge<V, E> minEdge = minHeap.poll();
+
+            // 加入前先检查是否会成环（如果已经在一个集合中，在加入就会成环）
+            if (unionFind.isSame(minEdge.from, minEdge.to)) continue;
+
+            // 来到这里，肯定不会成环了。添加结果、并且将起点和终点合并为一个集合
+            result.add(minEdge.info());
+            unionFind.union(minEdge.from, minEdge.to);
         }
 
         return result;

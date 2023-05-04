@@ -1,5 +1,6 @@
 package run.ciusyan._5_3;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -89,6 +90,13 @@ public class UnionFind<V> {
         if (p1 == null || p2 == null) return false;
 
         return p1.value == p2.value;
+    }
+
+    /** 批量生成集合 */
+    public void makeSet(Collection<V> values) {
+        if (values == null) return;
+
+        values.forEach(this::makeSet);
     }
 
     /**

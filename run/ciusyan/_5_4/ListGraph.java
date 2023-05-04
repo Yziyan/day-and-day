@@ -128,11 +128,54 @@ public class ListGraph<V, E> {
     }
 
     /**
+     * DFS非递归实现2
+     * 上一种实现中，我们采用了和BFS类似的做法，使用栈实现了非递归的DFS，
+     * 但是其实还有一种非递归版本的实现，使用栈是毋庸置疑的，因为需要回溯，
+     * 上一种实现的本质，其实也是：遇到一个节点就访问它，然后将根据它的出边，选择一条路径，添加到栈里面。
+     * 但是在其中需要注意是否是已经访问过的顶点。
+     */
+    public void dfs(V begin) {
+        Vertex<V, E> beginVertex = vertices.get(begin);
+        if (beginVertex == null) return;
+
+        // 准备第一个栈，用于回溯节点
+        Stack<Vertex<V, E>> stack = new Stack<>();
+        // 将起点入栈，并直接访问它
+        stack.push(beginVertex);
+        System.out.println(beginVertex.value);
+
+        // 用于记录已访问的节点
+        Set<Vertex<V, E>> visited = new HashSet<>();
+        visited.add(beginVertex);
+
+        while (!stack.isEmpty()) {
+            // 将栈顶元素出栈
+            Vertex<V, E> vertex = stack.pop();
+
+            // 选择一条出边的一个终点，继续访问
+            for (Edge<V, E> edge : vertex.outEdges) {
+                // 说明这个终点已经被访问过了
+                if (visited.contains(edge.to)) continue;
+                // 遇到一个顶点，就直接访问
+                System.out.println(edge.to.value);
+                visited.add(edge.to);
+
+                // 然后将起点和终点入栈，
+                stack.push(edge.from);
+                stack.push(edge.to);
+
+                // 只需选择一条路径即可
+                break;
+            }
+        }
+    }
+
+    /**
      * DFS非递归实现1
      * 我们以前在实现非递归的前序遍历的时候，有一种和层序遍历很类似的实现，就是将队列直接换成栈即可。
      * 因为我们要有一个回溯的过程。所以需要将访问过的顶点放入栈中，方便未来回溯
      */
-    public void dfs(V begin) {
+    public void dfs2(V begin) {
         Vertex<V, E> beginVertex = vertices.get(begin);
         if (beginVertex == null) return;
 

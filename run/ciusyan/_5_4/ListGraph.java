@@ -128,6 +128,37 @@ public class ListGraph<V, E> {
     }
 
     /**
+     * 深度优先遍历：深度优先遍历通过一个顶点，沿着一条路径，一直往下面钻，搜索能到达的顶点，
+     * 直至不能往下搜索了，那么回溯到上节点，寻找其他的路径。直至所有顶点都被访问。
+     * 这种需要不断往下钻并且需要回溯到上一层节点，可以使用递归实现。
+     * 二叉树的前序遍历，就是一种DFS的实现。
+     */
+    public void dfs(V begin) {
+        Vertex<V, E> beginVertex = vertices.get(begin);
+        if (beginVertex == null) return;
+
+        dfs(beginVertex, new HashSet<>());
+    }
+
+    /**
+     * 递归函数、从 curVertex 开始，遇到一个节点就访问他，并将他置为已访问的顶点，
+     * 然后往下钻，根据它的出边找到它未访问过的终点，将其进行递归调用
+     */
+    public void dfs(Vertex<V, E> curVertex, Set<Vertex<V, E>> visited) {
+        // 访问当前节点，并将它置为以访问
+        System.out.println(curVertex.value);
+        visited.add(curVertex);
+
+        // 根据当前顶点的出边，找一条路径继续往下访问
+        for (Edge<V, E> edge : curVertex.outEdges) {
+            // 没访问过才往下钻
+            if (!visited.contains(edge.to)) {
+                dfs(edge.to, visited);
+            }
+        }
+    }
+
+    /**
      * 广度优先遍历：从起点出发，逐层遍历，下一层的节点是当前层所有节点中，走一步就能到达的节点。
      * 直至所有顶点都被访问完毕。二叉树的层序遍历就是一种 BFS的实现。通常使用队列来完成BFS。
      */

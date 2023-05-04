@@ -272,6 +272,62 @@ public class ListGraph<V, E> {
         }
     }
 
+    /**
+     * 拓扑排序：拓扑是一种对有向无换图顶点的一种排序算法，它把每一个顶点抽象为一个活动，
+     * 将有向边的起点称为前驱活动，终点称为后继活动。拓扑排序指的是，按照所有的前驱活动都在后继活动的前面执行，
+     * 建成的一个序列。这一序列通常被用作解决编译顺序、任务调度等问题。
+     * 它通常使用卡恩算法来实现，也就是从入度为0的节点开始，每一次都选择入度为0的节点，然后将其删除掉。
+     * 继续选择入度为0的节点，直至所有节点都被加入序列中。
+     *
+     */
+    public List<V> topological() {
+        List<V> result = new ArrayList<>();
+
+        // 准备一个队列，用于按顺序排队
+        Queue<Vertex<V, E>> queue = new LinkedList<>();
+        // 准备一个Map，用于记录顶点的入度
+        Map<Vertex<V, E>, Integer> insMap = new HashMap<>();
+
+        // 遍历所有的顶点，
+        vertices.forEach((key, vertex) -> {
+            int ins = vertex.inEdges.size();
+            if (ins == 0) {
+                // 将入度为0的顶点加入队列中排队
+                queue.offer(vertex);
+            } else {
+                // 入度不为0的顶点放入map中
+                insMap.put(vertex, ins);
+            }
+        });
+
+        // 还有人在排队，就不能下班
+        while (!queue.isEmpty()) {
+            // 将队头的人添加到结果中
+            Vertex<V, E> vertex = queue.poll();
+            result.add(vertex.value);
+
+            // 然后模拟将这个节点删除（对应的出边的终点入度 - 1）
+            for (Edge<V, E> edge : vertex.outEdges) {
+                Integer ins = insMap.get(edge.to) - 1;
+
+                // 如果入度为 0 了，那就可以加入队列排队了
+                if (ins == 0) {
+                    queue.offer(edge.to);
+                } else {
+                    // 否则更新入度
+                    insMap.put(edge.to, ins);
+                }
+            }
+        }
+
+        // 有可能有环，那么将没有拓扑排序的结果
+        if (result.size() < vertices.size()) {
+            throw new RuntimeException("该图存在环、不能进行Topu排序");
+        }
+
+        return result;
+    }
+
     /** 顶点的抽象 */
     private static class Vertex<V, E> {
         // 存储的值

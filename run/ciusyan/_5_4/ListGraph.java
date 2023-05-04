@@ -128,23 +128,57 @@ public class ListGraph<V, E> {
     }
 
     /**
-     * 深度优先遍历：深度优先遍历通过一个顶点，沿着一条路径，一直往下面钻，搜索能到达的顶点，
-     * 直至不能往下搜索了，那么回溯到上节点，寻找其他的路径。直至所有顶点都被访问。
-     * 这种需要不断往下钻并且需要回溯到上一层节点，可以使用递归实现。
-     * 二叉树的前序遍历，就是一种DFS的实现。
+     * DFS非递归实现1
+     * 我们以前在实现非递归的前序遍历的时候，有一种和层序遍历很类似的实现，就是将队列直接换成栈即可。
+     * 因为我们要有一个回溯的过程。所以需要将访问过的顶点放入栈中，方便未来回溯
      */
     public void dfs(V begin) {
         Vertex<V, E> beginVertex = vertices.get(begin);
         if (beginVertex == null) return;
 
-        dfs(beginVertex, new HashSet<>());
+        // 准备一个栈、用于回溯顶点
+        Stack<Vertex<V, E>> stack = new Stack<>();
+        // 将起点入栈
+        stack.push(beginVertex);
+
+        // 用于记录已访问的顶点
+        Set<Vertex<V, E>> visited = new HashSet<>();
+
+        while (!stack.isEmpty()) {
+            // 将栈顶元素弹出
+            Vertex<V, E> vertex = stack.pop();
+            // 如果没有访问过，才访问（遇到一个顶点，就尝试访问）
+            if (visited.contains(vertex)) continue;
+
+            // 说明此节点未被访问过，访问，并置为已访问状态
+            System.out.println(vertex.value);
+            visited.add(vertex);
+
+            // 然后往下面钻，将此顶点所有的出边的终点都加入栈中，稍后的栈顶，就是选择的一条路。
+            for (Edge<V, E> edge : vertex.outEdges) {
+                stack.push(edge.to);
+            }
+        }
+    }
+
+    /**
+     * 深度优先遍历：深度优先遍历通过一个顶点，沿着一条路径，一直往下面钻，搜索能到达的顶点，
+     * 直至不能往下搜索了，那么回溯到上节点，寻找其他的路径。直至所有顶点都被访问。
+     * 这种需要不断往下钻并且需要回溯到上一层节点，可以使用递归实现。
+     * 二叉树的前序遍历，就是一种DFS的实现。
+     */
+    public void dfs1(V begin) {
+        Vertex<V, E> beginVertex = vertices.get(begin);
+        if (beginVertex == null) return;
+
+        dfs1(beginVertex, new HashSet<>());
     }
 
     /**
      * 递归函数、从 curVertex 开始，遇到一个节点就访问他，并将他置为已访问的顶点，
      * 然后往下钻，根据它的出边找到它未访问过的终点，将其进行递归调用
      */
-    public void dfs(Vertex<V, E> curVertex, Set<Vertex<V, E>> visited) {
+    public void dfs1(Vertex<V, E> curVertex, Set<Vertex<V, E>> visited) {
         // 访问当前节点，并将它置为以访问
         System.out.println(curVertex.value);
         visited.add(curVertex);
@@ -153,7 +187,7 @@ public class ListGraph<V, E> {
         for (Edge<V, E> edge : curVertex.outEdges) {
             // 没访问过才往下钻
             if (!visited.contains(edge.to)) {
-                dfs(edge.to, visited);
+                dfs1(edge.to, visited);
             }
         }
     }

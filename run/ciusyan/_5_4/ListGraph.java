@@ -127,6 +127,43 @@ public class ListGraph<V, E> {
         return edges.size();
     }
 
+    /**
+     * 广度优先遍历：从起点出发，逐层遍历，下一层的节点是当前层所有节点中，走一步就能到达的节点。
+     * 直至所有顶点都被访问完毕。二叉树的层序遍历就是一种 BFS的实现。通常使用队列来完成BFS。
+     */
+    public void bfs(V begin) {
+        Vertex<V, E> beginVertex = vertices.get(begin);
+        if (beginVertex == null) return;
+
+        // 准备一个队列，用于按顺序访问下一层的节点
+        Queue<Vertex<V, E>> queue = new LinkedList<>();
+        // 将起点入队
+        queue.offer(beginVertex);
+
+        // 用于记录已经被添加到队列中的顶点，只要被添加到队列中了，那么就会顺序的被访问，
+        //  本质上就是记录已经被访问的顶点。
+        Set<Vertex<V, E>> addedQueue = new HashSet<>();
+        addedQueue.add(beginVertex);
+
+        // 直至所有节点都访问完毕
+        while (!queue.isEmpty()) {
+            // 弹出队头，访问节点
+            Vertex<V, E> vertex = queue.poll();
+            System.out.println(vertex.value);
+
+            // 并将此顶点出边的终点添加到队列中
+            for (Edge<V, E> edge : vertex.outEdges) {
+                // 没有加入过队列的顶点，才需要添加进去
+                if (!addedQueue.contains(edge.to)) {
+                    queue.offer(edge.to);
+
+                    // 别忘记将它标记为已经添加到队列中了
+                    addedQueue.add(edge.to);
+                }
+            }
+        }
+    }
+
     /** 顶点的抽象 */
     private static class Vertex<V, E> {
         // 存储的值

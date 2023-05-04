@@ -328,6 +328,49 @@ public class ListGraph<V, E> {
         return result;
     }
 
+    /**
+     * 使用 Prim 算法求出的MST：
+     * Prim算法是一种基于贪心思想和切分定理实现的用于求解最小生成树的算法。先来了解一下切分定理，
+     * 将图中的顶点一分为二被称为一次切分，它们之间被切开的边叫做横切边，切分定理是在若干切分中，
+     * 选择一条权值最小的边。Prim就是利用切分定理，将顶点分为已切分和未切分两类顶点，然后每次将
+     * 这两类顶点一分为二，选择一条权值最小的横切边加入结果集，直至所有顶点都被加入已切分的顶点集中。
+     */
+    public Set<EdgeInfo<V, E>> mstPrim() {
+        // 存放结果的集合
+        Set<EdgeInfo<V, E>> result = new HashSet<>();
+
+        // 随机获取一个顶点
+        Iterator<Vertex<V, E>> it = vertices.values().iterator();
+        if (!it.hasNext()) return result;
+        Vertex<V, E> beginVertex = it.next();
+        // 准备一个已切分的顶点集
+        Set<Vertex<V, E>> cuts = new HashSet<>();
+        cuts.add(beginVertex);
+
+        // 将这个顶点的出边集和加入最小堆中，并且将它原地建堆
+        // 这里要注意，需要边的权值，具备可比较性。我们这里先这样认为他拥有可比较性了
+        PriorityQueue<Edge<V, E>> minHeap = new PriorityQueue<>(beginVertex.outEdges);
+
+        // 如果堆里还有元素，或者已经切分完了，就可退出了
+        int vertexSize = vertices.size();
+        while (!minHeap.isEmpty() && cuts.size() < vertexSize) {
+            // 删除堆顶元素
+            Edge<V, E> minEdge = minHeap.poll();
+
+            // 查看它的终点，有没有被切分过，切分了就直接跳过
+            if (cuts.contains(minEdge.to)) continue;
+
+            // 来到这里，将它加入结果集合中，并且置为已切分
+            result.add(minEdge.info());
+            cuts.add(minEdge.to);
+
+            // 然后需要将它终点的出边作为起点入堆，进行下一轮循环
+            minHeap.addAll(minEdge.to.outEdges);
+        }
+
+        return result;
+    }
+
     /** 顶点的抽象 */
     private static class Vertex<V, E> {
         // 存储的值
@@ -366,6 +409,10 @@ public class ListGraph<V, E> {
         // 边的权值
         E weight;
 
+        EdgeInfo<V, E> info() {
+            return new EdgeInfo<>(from.value, to.value, weight);
+        }
+
         public Edge(Vertex<V, E> from, Vertex<V, E> to) {
             this(to, from, null);
         }
@@ -393,4 +440,18 @@ public class ListGraph<V, E> {
             return Objects.hash(from, to);
         }
     }
+
+    /** 用于传递边的信息（给外界看的） */
+    public static class EdgeInfo<V, E> {
+        V from;
+        V to;
+        E weight;
+
+        public EdgeInfo(V from, V to, E weight) {
+            this.from = from;
+            this.to = to;
+            this.weight = weight;
+        }
+    }
+
 }

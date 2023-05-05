@@ -185,6 +185,13 @@ public class MinHeap<E> {
         siftUp(size++);
     }
 
+    /** 批量添加 */
+    public void addAll(Collection<E> collection) {
+        if (collection == null) return;
+
+        collection.forEach(this::add);
+    }
+
     /**
      * 上滤操作：
      * 将上滤节点不断的与祖父节点比较，若父节点比自己还大，那么交换它们，直至放入合适的位置

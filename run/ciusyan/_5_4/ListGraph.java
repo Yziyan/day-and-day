@@ -12,10 +12,10 @@ import java.util.*;
 public class ListGraph<V, E> {
 
     /** 存储图中所有的顶点 */
-    private Map<V, Vertex<V, E>> vertices = new HashMap<>();
+    protected Map<V, Vertex<V, E>> vertices = new HashMap<>();
 
     /** 存储图中所有的边 */
-    private Set<Edge<V, E>> edges = new HashSet<>();
+    protected Set<Edge<V, E>> edges = new HashSet<>();
 
     /** 添加一个顶点 */
     public void addVertex(V v) {
@@ -410,13 +410,13 @@ public class ListGraph<V, E> {
     }
 
     /** 顶点的抽象 */
-    private static class Vertex<V, E> {
+    public static class Vertex<V, E> {
         // 存储的值
-        V value;
+        public V value;
         // 此顶点的入边集合
-        Set<Edge<V, E>> inEdges = new HashSet<>();
+        public Set<Edge<V, E>> inEdges = new HashSet<>();
         // 此顶点的出边集合
-        Set<Edge<V, E>> outEdges = new HashSet<>();
+        public Set<Edge<V, E>> outEdges = new HashSet<>();
 
         public Vertex(V value) {
             this.value = value;
@@ -439,15 +439,15 @@ public class ListGraph<V, E> {
     }
 
     /** 边的抽象 */
-    private static class Edge<V, E> {
+    public static class Edge<V, E> {
         // 边的起点
-        Vertex<V, E> from;
+        public Vertex<V, E> from;
         // 边的终点
-        Vertex<V, E> to;
+        public Vertex<V, E> to;
         // 边的权值
-        E weight;
+        public E weight;
 
-        EdgeInfo<V, E> info() {
+        public EdgeInfo<V, E> info() {
             return new EdgeInfo<>(from.value, to.value, weight);
         }
 

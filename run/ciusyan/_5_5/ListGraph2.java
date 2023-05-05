@@ -1,5 +1,6 @@
 package run.ciusyan._5_5;
 
+import run.ciusyan._5_3.UnionFind;
 import run.ciusyan._5_4.ListGraph;
 
 import java.util.*;
@@ -59,6 +60,39 @@ public class ListGraph2 <V, E> extends ListGraph<V, E> {
 
             // 然后将这条边的终点作为起点，继续进行切分操作
             minHeap.addAll(edge.to.outEdges);
+        }
+
+        return result;
+    }
+
+    /**
+     * 同Prim一样，使用自己的最小堆来实现
+     */
+    @Override
+    public Set<EdgeInfo<V, E>> mstKruskal() {
+        Set<EdgeInfo<V, E>> result = new HashSet<>();
+
+        // 准备一个最小堆，用于每一次获取最小权边（直接将所有边入堆）
+        MinHeap<Edge<V, E>> minHeap = new MinHeap<>(edges, weightComparator);
+        // 准备一个并查集，用于判断是否有环
+        UnionFind<Vertex<V, E>> unionFind = new UnionFind<>();
+        // 将所有顶点初始化为一个单独的集合
+        unionFind.makeSet(vertices.values());
+
+        // 堆为空，或者已经有 n - 1条边了
+        int resEdgeSize = vertices.size() - 1;
+        while (!minHeap.isEmpty() && result.size() < resEdgeSize) {
+            // 删除最小边
+            Edge<V, E> minEdge = minHeap.remove();
+
+            // 判断起点和终点是否在同一集合
+            if (unionFind.isSame(minEdge.from, minEdge.to)) continue;
+
+            // 来到这里，说明加入这条边，不会出现环
+            result.add(minEdge.info());
+
+            // 然后将这条边的起点和终点合并到一个集合
+            unionFind.union(minEdge.from, minEdge.to);
         }
 
         return result;

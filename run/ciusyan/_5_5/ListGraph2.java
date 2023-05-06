@@ -14,10 +14,10 @@ import java.util.*;
 public class ListGraph2 <V, E> extends ListGraph<V, E> {
 
     /** 每一幅图都拥有自己的权值管理器 */
-    private WeightManager<E> weightManager;
+    protected WeightManager<E> weightManager;
 
     /** 每一幅图都拥有自己的边比较器 */
-    private Comparator<Edge<V, E>> edgeComparator = new Comparator<>() {
+    protected Comparator<Edge<V, E>> edgeComparator = new Comparator<>() {
         @Override
         public int compare(Edge<V, E> o1, Edge<V, E> o2) {
             return weightManager.compare(o1.weight, o2.weight);
@@ -100,14 +100,14 @@ public class ListGraph2 <V, E> extends ListGraph<V, E> {
 
     /**
      * Dijkstra实现的单元最短路径算法：
-     * Dijkstra 是一种基于贪心策略的一种求解单源最短路径的算法，它的核心是不断的理由松弛操作。
+     * Dijkstra 是一种基于贪心策略的一种求解单源最短路径的算法，它的核心是不断对能到达的边进行松弛操作。
      * 从源点开始，不断的对每一条边进行松弛操作，其实就是更新源点到能到达顶点间的距离，每一次松弛操作的意义在于，尝试找出
      * 更短的路径，然后每一次松弛完成后，选择所有路径中长度最短的一条路径，这条路径就是源点到对应终点的最短路径。
      * 它适用于没有负权边的图（有向、无向、无权都可以）
      * @param src：源点
      * @return ：源点到其他的点的最短路径长度。如：<B， 40>
      */
-    public Map<V, E> shortPathDijkstra(V src) {
+    public Map<V, E> shortPathDijkstra1(V src) {
         Map<V, E> result = new HashMap<>();
 
         // 获取源点
@@ -184,5 +184,8 @@ public class ListGraph2 <V, E> extends ListGraph<V, E> {
 
         /** 将两条边的权值相加 */
         E add(E w1, E w2);
+
+        /** 权值的 零 值 */
+        E zero();
     }
 }

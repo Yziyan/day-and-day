@@ -14,6 +14,89 @@ public class ListGraph3 <V, E> extends ListGraph2<V, E> {
     }
 
     /**
+     * Floyd：是一种用于求解多元最短路径的算法，该算法也支持负权边，它的核心思想是：
+     * 任意两个顶点的最短路径只有两种情况：
+     * 1、直接从源点到终点
+     * 2、从源点出发，经过若干顶点后，到达终点
+     * @return <"A", <"B", PathInfo> ...> ...
+     */
+    public Map<V, Map<V, PathInfo<V, E>>> shortPathFloyd() {
+        Map<V, Map<V, PathInfo<V, E>>> paths = new HashMap<>();
+        // 初始化最短路径，先默认每一条边的起点到终点，就是这两个顶点间的最短路径
+        for (Edge<V, E> edge : edges) {
+            // 尝试获取起点的最短路径信息
+            Map<V, PathInfo<V, E>> fromPath = paths.get(edge.from.value);
+
+            if (fromPath == null) {
+                // 说明此起点还未初始化
+                fromPath = new HashMap<>();
+                paths.put(edge.from.value, fromPath);
+            }
+
+            // 来到这里，肯定初始化了，但是还需要初始化它这条边终点的路径信息
+            PathInfo<V, E> toPath = new PathInfo<>(edge.weight);
+            toPath.edgeInfos.add(edge.info());
+            fromPath.put(edge.to.value, toPath);
+        }
+
+        // 初始化完毕，三层循环、每一次尝试求解 v1 -> v3 的目标距离
+        vertices.forEach((v2, vertex2) -> {
+            vertices.forEach((v1, vertex1) -> {
+                vertices.forEach((v3, vertex3) -> {
+                    // 如果 v1、v2、v3 任意两个顶点是相等的，说明不用计算了
+                    if (v1.equals(v2) || v2.equals(v3) || v1.equals(v3)) return;
+
+                    // 获取 v1 -> v2 的最短路径信息
+                    PathInfo<V, E> path12 = getPath(v1, v2, paths);
+                    // 如果没有路，就直接返回
+                    if (path12 == null) return;
+
+                    // 获取 v2 -> v3 的最短路径信息
+                    PathInfo<V, E> path23 = getPath(v2, v3, paths);
+                    // 如果没有路，就直接返回
+                    if (path23 == null) return;
+
+                    // 计算出 v1->v2 + v2->v3（间接）
+                    E weight123 = weightManager.add(path12.weight, path23.weight);
+
+                    // 获取 v1 -> v3 的最短路径信息
+                    PathInfo<V, E> path13 = getPath(v1, v3, paths);
+                    // 说明 v1 -> v3 比间接到达还近，直接返回
+                    if (path13 != null && weightManager.compare(weight123, path13.weight) >= 0) return;
+
+                    // 到达这里，说明找到一条新路了
+                    if (path13 == null) {
+                        // 说明 v1 -> v3 还没有路
+                        path13 = new PathInfo<>(weight123);
+                        // 添加 v1 -> v3 的路径
+                        paths.get(v1).put(v3, path13);
+                    } else {
+                        // 说明以前有路，但是不是最短的，清除以前的路径，更新路径长度
+                        path13.edgeInfos.clear();
+                        path13.weight = weight123;
+                    }
+
+                    // 来到这里了，说明要更新新路径了
+                    // 先添加 v1 -> v2 的路径
+                    path13.edgeInfos.addAll(path12.edgeInfos);
+                    // 再添加 v2 -> v3 的路径
+                    path13.edgeInfos.addAll(path23.edgeInfos);
+                });
+            });
+        });
+
+        return paths;
+    }
+
+    /** 获取 src -> dist 的最短路径 */
+    private PathInfo<V, E> getPath(V src, V dist, Map<V, Map<V, PathInfo<V, E>>> paths) {
+        Map<V, PathInfo<V, E>> srcPaths = paths.get(src);
+
+        return srcPaths == null ? null : srcPaths.get(dist);
+    }
+
+
+    /**
      * Bellman-Ford 也是一种基于贪心策略的用于求解单源最短路径的算法，它的核心操作就是对每一条边都进行 n - 1 次
      * 松弛操作，就能得到所有顶点的最短路径，它可以支持负权边，但不支持负权环。
      * 基于这一点，可以利用它来判断，是否带有负权环等问题。

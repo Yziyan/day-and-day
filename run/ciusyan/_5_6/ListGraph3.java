@@ -14,6 +14,86 @@ public class ListGraph3 <V, E> extends ListGraph2<V, E> {
     }
 
     /**
+     * Bellman-Ford 也是一种基于贪心策略的用于求解单源最短路径的算法，它的核心操作就是对每一条边都进行 n - 1 次
+     * 松弛操作，就能得到所有顶点的最短路径，它可以支持负权边，但不支持负权环。
+     * 基于这一点，可以利用它来判断，是否带有负权环等问题。
+     */
+    public Map<V, PathInfo<V, E>> shortPathBellmenFord(V src) {
+        Map<V, PathInfo<V, E>> result = new HashMap<>();
+
+        // 但是需要进行初始化操作，我们目前能直接求出来的最短路径，
+        // 可以使用 源点 -> 源点，我们只需要使用它的权值即可，不需要真正创建一条路径
+        result.put(src, new PathInfo<>(weightManager.zero()));
+
+        // 对所有边 进行 v - 1 次松弛操作
+        int count = vertices.size() - 1;
+        for (int i = 0; i < count; i++) {
+            for (Edge<V, E> edge : edges) {
+                // 尝试获取从源点到这条边的最短路径
+                PathInfo<V, E> minPath = result.get(edge.to.value);
+
+                // 说明此条边还不能被拉起来，松弛不动
+                if (minPath == null) continue;
+
+                relaxForBellmanFord(edge, minPath, result);
+            }
+        }
+
+        // 可以检测是否有负权环，只需要再进行一次松弛操作，如果能成功，说明有负权环
+        for (Edge<V, E> edge : edges) {
+            final PathInfo<V, E> minPath = result.get(edge.to.value);
+            if (minPath == null) continue;
+
+            if (relaxForBellmanFord(edge, minPath, result)) {
+                throw new RuntimeException("存在负权环");
+            }
+        }
+
+        // 删除源点到源点的信息
+        result.remove(src);
+
+        return result;
+    }
+
+    /**
+     * 松弛操作
+     * @param edge：松弛的边
+     * @param minPath：此前的最短路径
+     * @param result：最终结果
+     */
+    private boolean relaxForBellmanFord(Edge<V,E> edge,
+                                     PathInfo<V,E> minPath, Map<V, PathInfo<V,E>> result) {
+
+        // 首先计算出新权值
+        E newWeight = weightManager.add(minPath.weight,edge.weight);
+
+        // 获取旧的路径信息
+        PathInfo<V, E> oldPath = result.get(edge.to.value);
+
+        // 和旧权值比较，当然可能以前也没有路可走
+        // 说明新的权值还要大一些
+        if (oldPath != null && weightManager.compare(oldPath.weight, newWeight) <= 0) return false;
+
+        // 来到这里，说明找到新的路径了
+        if (oldPath == null) {
+            // 说明以前没有路径
+            oldPath = new PathInfo<>(newWeight);
+            result.put(edge.to.value, oldPath);
+        } else {
+            // 说明以前有路，更新权值和删除旧的路径
+            oldPath.edgeInfos.clear();
+            oldPath.weight = newWeight;
+        }
+
+        // 设置新的路径，先设置最短路径
+        oldPath.edgeInfos.addAll(minPath.edgeInfos);
+        // 再加上这条边
+        oldPath.edgeInfos.add(edge.info());
+
+        return true;
+    }
+
+    /**
      * 完善版Dijkstra算法：
      * 不仅包含源点到达每一个顶点的最短路径，还包含了路径信息，其实实现的思路还是一样的，
      * 只是换成了泛型参数而已。都是从源点开始，对它能到达的边不断的进行松弛操作。每一次松弛过后，选择一条最短的路径。
@@ -60,6 +140,12 @@ public class ListGraph3 <V, E> extends ListGraph2<V, E> {
         return result;
     }
 
+    /**
+     * 松弛操作
+     * @param edge：进行松弛的边
+     * @param minPathInfo：此前最短路径的信息
+     * @param paths：中间结果
+     */
     public void relaxForDijkstra(Edge<V, E> edge,
                                  PathInfo<V, E> minPathInfo,
                                  Map<Vertex<V, E>, PathInfo<V, E>> paths) {

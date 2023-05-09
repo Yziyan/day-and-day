@@ -5,13 +5,12 @@ import java.util.List;
 
 /**
  * N皇后问题：
+ * https://leetcode.cn/problems/n-queens/submissions/
  *  这是一道著名的可以利用DFS种的一些思想的题目，主要是利用到了回溯和剪枝
  *      回溯：如果一条路径不能往下走了，那么就会回溯到上一个路口，然后重新寻找一条路径
  *      剪枝：提前排除一些下一步可走，但是最终不可能到达的路径
  */
 public class NQueens {
-
-    private int ways;
 
     public List<List<String>> solveNQueens(int n) {
         List<List<String>> result = new ArrayList<>();

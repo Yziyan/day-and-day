@@ -29,7 +29,6 @@ public class NQueens {
     private void place(int row, int[] cols, List<List<String>> result) {
         // 说明每一行都摆好了
         if (row == cols.length) {
-            ways++;
             // 记录结果
             record(result, cols);
 

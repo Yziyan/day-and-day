@@ -5,8 +5,7 @@ package run.ciusyan._5_16;
  */
 public class 部分排序 {
     public int[] subSort(int[] array) {
-        if (array == null || array.length == 0) return new int[] {-1, -1};
-        if (array.length < 2) return array;
+        if (array == null || array.length < 2) return new int[] {-1, -1};
 
         // 从前往后找到最后一个逆序对，就是最后一个乱序的
         int lastIdx = -1;

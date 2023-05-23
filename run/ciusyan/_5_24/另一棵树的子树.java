@@ -42,7 +42,46 @@ public class 另一棵树的子树 {
         serializeTree(root.right, sb);
     }
 
+    /**
+     * 树的反序列化
+     * @param rootStr：形如 #3#4#1#!#!#2#0#!#!#!#5#!#!# 的树，如何将这个字符串树序列化成一棵树
+     * @return 树的根节点
+     *
+     */
+    public static TreeNode reSerializeTree(String rootStr) {
+        if (rootStr == null) return null;
+
+        String[] split = rootStr.split("#");
+
+        return reBuild(split);
+    }
+
+    static int level = 1;
+    private static TreeNode reBuild(String[] split) {
+        if ("!".contains(split[level])) {
+            // 说明到空节点了
+            return null;
+        }
+
+        TreeNode root = new TreeNode(Integer.parseInt(split[level]));
+
+        level++;
+        // DFS
+        root.left = reBuild(split);
+        level++;
+        root.right = reBuild(split);
+
+        return root;
+    }
+
+
+
     public static void main(String[] args) {
+        TreeNode treeNode = reSerializeTree("#3#4#1#!#!#2#0#!#!#!#5#!#!#");
+        System.out.println();
+    }
+
+    static void test1() {
         TreeNode root = new TreeNode(3);
         root.left = new TreeNode(4);
         root.right = new TreeNode(5);
@@ -63,5 +102,4 @@ public class 另一棵树的子树 {
         System.out.println(rootStr.contains(sbRootStr));
         System.out.println(isSubtree(root, subRoot));
     }
-
 }

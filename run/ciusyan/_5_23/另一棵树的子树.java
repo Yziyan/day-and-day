@@ -1,4 +1,4 @@
-package run.ciusyan._5_24;
+package run.ciusyan._5_23;
 
 
 import run.ciusyan.common.TreeNode;

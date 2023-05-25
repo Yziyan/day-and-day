@@ -1,4 +1,4 @@
-package run.ciusyan._5_23;
+package run.ciusyan._5_22;
 
 import java.util.Stack;
 

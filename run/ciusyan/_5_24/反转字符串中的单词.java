@@ -1,4 +1,4 @@
-package run.ciusyan._5_25;
+package run.ciusyan._5_24;
 
 
 import java.util.Arrays;

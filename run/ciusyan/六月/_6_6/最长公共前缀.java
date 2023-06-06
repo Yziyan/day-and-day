@@ -29,6 +29,9 @@ public class 最长公共前缀 {
                 end++;
             }
 
+            // 若某次比较没有前缀，那么说明所有字符没有公共前缀
+            if (end == 0) return "";
+
             result = new String(chars, 0, end);
         }
 

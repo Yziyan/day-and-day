@@ -9,8 +9,7 @@ public class QuickSort {
         if (nums == null || nums.length < 2) return;
 
         // 对整个序列进行快速排序
-
-
+        sort(nums, 0, nums.length);
     }
 
     /** 对 [begin, end) 的元素进行快速排序 */
@@ -20,7 +19,6 @@ public class QuickSort {
 
         // 构建轴点元素，并返回轴点元素的索引
         int pivotIndex = buildPivot(nums, begin, end);
-
         // 利用轴点将序列一分为二，也进行快速排序
         sort(nums, begin, pivotIndex);
         // 因为轴点位置已经放置了，那么需要从轴点后一个位置开始快排

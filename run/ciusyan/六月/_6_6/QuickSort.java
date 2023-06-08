@@ -52,7 +52,7 @@ public class QuickSort {
                     // 到达这里说明需要将此元素交换到前面去，
                     nums[begin++] = nums[end];
 
-                    // 此处的 break 是需要转换扫描方向了，改成从后往前扫描
+                    // 此处的 break 是需要转换扫描方向了，改成从前往后扫描
                     break;
                 }
             }

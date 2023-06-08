@@ -1,4 +1,4 @@
-package run.ciusyan.六月._6_7;
+package run.ciusyan.六月._6_8;
 
 /**
  * https://leetcode.cn/problems/sudoku-solver/

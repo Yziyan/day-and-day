@@ -42,7 +42,7 @@ public class 解码方法 {
         return dp[len];
     }
 
-        /** 类似 DFS 的思想递归，如果情况非常多可能会超时 */
+    /** 类似 DFS 的思想递归，如果情况非常多可能会超时 */
     public static int numDecodings1(String s) {
         if (s == null) return 0;
         char[] chars = s.toCharArray();

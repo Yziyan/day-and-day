@@ -13,6 +13,7 @@ public class 对称二叉树 {
         return isSymmetric(root.left, root.right);
     }
 
+    /** 判断 left 和 right 的值是否相等 */
     private boolean isSymmetric(TreeNode left, TreeNode right) {
         // 说明到达树的末尾了
         if (left == null && right == null) return true;

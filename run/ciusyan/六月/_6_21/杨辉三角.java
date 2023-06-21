@@ -14,21 +14,21 @@ public class 杨辉三角 {
 
         // 先将第一行构建了
         results.add(List.of(1));
-        // 一行一行的构建杨辉三角
-        for (int i = 1; i < numRows; i++) {
+        // 再从第二行开始，一行一行的构建杨辉三角
+        for (int row = 1; row < numRows; row++) {
             List<Integer> res = new ArrayList<>();
 
             // 将第一个数设置为 1
             res.add(1);
-            for (int j = 1; j < i; j++) {
+            for (int col = 1; col < row; col++) {
                 // 取出上一行的值
-                List<Integer> prevRow = results.get(i - 1);
+                List<Integer> prevRow = results.get(row - 1);
 
                 // 将左上角和正上方的数相加，得到当前位置的结果
-                res.add(prevRow.get(j - 1) + prevRow.get(j));
+                res.add(prevRow.get(col - 1) + prevRow.get(col));
             }
             // 将最后一个数也设置为 1
-            res.add(i, 1);
+            res.add(row, 1);
 
             results.add(res);
         }
